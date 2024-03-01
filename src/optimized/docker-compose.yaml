@@ -1,0 +1,17 @@
+version: '3'
+services:
+  lambda:
+    build: .
+    ports:
+      - "9000:8080"
+    container_name: aws-lambda-go-reference
+    image: aws-lambda-go-reference
+    entrypoint: ["/aws-lambda/aws-lambda-rie", "/main"]
+    volumes:
+      # Local testing with rie
+      - ~/.aws-lambda-rie:/aws-lambda
+    environment:
+      # Local testing with AWS credentials coming from your shell's current environment
+      - AWS_ACCESS_KEY_ID
+      - AWS_SECRET_ACCESS_KEY
+      - AWS_SESSION_TOKEN
