@@ -20,6 +20,9 @@
 # Go workspace file
 go.work
 
+*bootstrap
+
+terraform/builds
 terraform/.terraform
 terraform/terraform.tfstate
 terraform/*tfstate*

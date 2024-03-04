@@ -60,8 +60,7 @@ resource "aws_iam_policy" "lambda_iam_policy" {
         "s3:*"
       ],
       "Resource": [
-        "${aws_s3_bucket.terraform_state.arn}/*",
-        "${aws_s3_bucket.terraform_state.arn}"
+        "*"
       ],
       "Effect": "Allow"
     },
@@ -73,38 +72,40 @@ resource "aws_iam_policy" "lambda_iam_policy" {
         "${aws_ssm_parameter.test_param.arn}"
       ],
       "Effect": "Allow"
-    },
-    {
-      "Action": [
-        "cloudwatch:*"
-      ],
-      "Resource": "*",
-      "Effect": "Allow"
     }
   ]
 }
   EOF
 }
 
-resource "aws_iam_role_policy_attachment" "attach_iam_policy_to_iam_role" {
+resource "aws_iam_role_policy_attachment" "lambda_role" {
   role       = aws_iam_role.lambda_role.name
   policy_arn = aws_iam_policy.lambda_iam_policy.arn
 }
 
-module "default_lambda" {
-  source = "./modules/docker_lambda"
+resource "aws_iam_role_policy_attachment" "lambda_basic_execution_policy" {
+  role       = aws_iam_role.lambda_role.name
+  policy_arn = data.aws_iam_policy.lambda_basic_execution_role.arn
+}
 
-  ecr_repo    = "default_golang_lambda"
-  lambda_name = "default_golang_lambda_function"
-  source_path = "../src/default"
-  lambda_role_arn = aws_iam_role.lambda_role.arn
+module "default_lambda" {
+  source = "./modules/lambda"
+
+  lambda_name       = "default_golang_lambda_function"
+  source_path       = "../src/default"
+  lambda_environment_variables = {
+    BUCKET_NAME = aws_s3_bucket.test_bucket.id
+  }
+  lambda_role_arn   = aws_iam_role.lambda_role.arn
 }
 
 module "optimized_lambda" {
-  source = "./modules/docker_lambda"
+  source = "./modules/lambda"
 
-  ecr_repo    = "optimized_golang_lambda"
-  lambda_name = "optimized_golang_lambda_function"
-  source_path = "../src/optimized"
-  lambda_role_arn = aws_iam_role.lambda_role.arn
+  lambda_name       = "optimized_golang_lambda_function"
+  source_path       = "../src/optimized"
+  lambda_environment_variables = {
+    BUCKET_NAME = aws_s3_bucket.test_bucket.id
+  }
+  lambda_role_arn   = aws_iam_role.lambda_role.arn
 }

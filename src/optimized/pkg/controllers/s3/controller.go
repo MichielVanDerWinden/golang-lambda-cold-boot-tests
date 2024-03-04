@@ -5,6 +5,7 @@ import (
 	aws_s3 "lambda/pkg/aws/s3"
 	controller "lambda/pkg/controllers"
 	"net/http"
+	"os"
 
 	"github.com/aquasecurity/lmdrouter"
 	"github.com/aws/aws-lambda-go/events"
@@ -15,7 +16,7 @@ var (
 )
 
 func init() {
-	bucket = "michiel-golang-lambda-cold-boot-tests-tf-state"
+	bucket = os.Getenv("BUCKET_NAME")
 }
 
 /*

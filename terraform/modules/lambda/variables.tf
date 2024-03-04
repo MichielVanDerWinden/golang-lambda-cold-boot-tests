@@ -2,10 +2,6 @@ variable "lambda_name" {
   type = string
 }
 
-variable "ecr_repo" {
-  type = string
-}
-
 variable "source_path" {
   type = string
 }
@@ -16,4 +12,8 @@ variable "aws_region" {
 
 variable "lambda_role_arn" {
   type = string
+}
+
+variable "lambda_environment_variables" {
+  type = map(string)
 }
